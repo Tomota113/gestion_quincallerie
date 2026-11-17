@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+{% block content %}
+<h1>Tableau de bord</h1>
+<p class="subtitle">Vue d'ensemble reconstruite depuis les exports Sage.</p>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="value num">{{ stats.articles }}</div>
+    <div class="label">Articles au catalogue</div>
+    <div class="sub">{{ stats.articles_connus }} avec prix connu</div>
+  </div>
+  <div class="stat-card">
+    <div class="value num">{{ stats.clients }}</div>
+    <div class="label">Clients</div>
+    <div class="sub">{{ stats.clients_connus }} avec coordonnées connues</div>
+  </div>
+  <div class="stat-card">
+    <div class="value num">{{ stats.factures }}</div>
+    <div class="label">Factures enregistrées</div>
+  </div>
+  <div class="stat-card">
+    <div class="value num">{{ stats.depots }}</div>
+    <div class="label">Dépôts suivis</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h2>Ventes récentes</h2>
+    {% if ventes_recentes %}
+    <table>
+      <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Lignes</th></tr></thead>
+      <tbody>
+      {% for v in ventes_recentes %}
+        <tr>
+          <td class="num">{{ v.date }}</td>
+          <td><a class="code" href="{{ url_for('facture_detail', facture_id=v.id) }}">{{ v.numero }}</a></td>
+          <td>{{ v.client_nom }}</td>
+          <td class="num">{{ v.n_lignes }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Aucune vente enregistrée.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Articles les plus vendus</h2>
+    {% if top_articles %}
+    <table>
+      <thead><tr><th>Article</th><th>Qté vendue</th></tr></thead>
+      <tbody>
+      {% for a in top_articles %}
+        <tr>
+          <td><a href="{{ url_for('article_detail', code=a.article_code) }}">{{ a.designation }}</a></td>
+          <td class="num">{{ '%.0f'|format(a.total) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Pas encore de données de vente.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Stock bas à surveiller <span style="text-transform:none; font-weight:400;">(articles à prix connu, 2 unités ou moins)</span></h2>
+  {% if alertes_stock %}
+  <table>
+    <thead><tr><th>Code</th><th>Désignation</th><th>Quantité restante</th></tr></thead>
+    <tbody>
+    {% for s in alertes_stock %}
+      <tr>
+        <td class="code"><a href="{{ url_for('article_detail', code=s.code) }}">{{ s.code }}</a></td>
+        <td>{{ s.designation }}</td>
+        <td class="num">{{ '%.0f'|format(s.total) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Rien à signaler.</p>
+  {% endif %}
+</div>
+{% endblock %}

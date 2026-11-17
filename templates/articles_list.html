@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Articles{% endblock %}
+{% block content %}
+<h1>Articles</h1>
+<p class="subtitle">{{ total }} article{{ 's' if total != 1 }} au catalogue.</p>
+
+<form class="searchbar" method="get">
+  <input type="text" name="q" placeholder="Rechercher par code ou désignation…" value="{{ q }}">
+  <button type="submit">Rechercher</button>
+</form>
+
+{% if rows %}
+<table class="card">
+  <thead><tr><th>Code</th><th>Désignation</th><th>Famille</th><th>Prix de vente</th><th>Stock total</th><th></th></tr></thead>
+  <tbody>
+  {% for a in rows %}
+    <tr>
+      <td class="code">{{ a.code }}</td>
+      <td><a href="{{ url_for('article_detail', code=a.code) }}">{{ a.designation }}</a></td>
+      <td>{{ a.famille or '—' }}</td>
+      <td class="num">{{ '%.0f'|format(a.prix_vente) if a.complet else '—' }}</td>
+      <td class="num">{{ '%.0f'|format(a.stock_total) }}</td>
+      <td>{% if not a.complet %}<span class="badge warn">à compléter</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="pagination">
+  <a class="{{ 'disabled' if page <= 1 }}" href="?q={{ q }}&page={{ page - 1 }}">← Précédent</a>
+  <span>Page {{ page }}</span>
+  <a class="{{ 'disabled' if not has_next }}" href="?q={{ q }}&page={{ page + 1 }}">Suivant →</a>
+</div>
+{% else %}
+<p class="empty">Aucun article ne correspond à cette recherche.</p>
+{% endif %}
+{% endblock %}

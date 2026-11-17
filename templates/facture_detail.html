@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ f.numero }}{% endblock %}
+{% block content %}
+<div class="breadcrumb"><a href="{{ url_for('factures_list') }}">← Ventes</a></div>
+<h1 class="code">{{ f.numero }}</h1>
+<p class="subtitle">
+  {{ f.date }} ·
+  {% if f.client_code %}<a href="{{ url_for('client_detail', code=f.client_code) }}">{{ f.client_nom }}</a>{% else %}Client non renseigné{% endif %}
+  {% if f.depot_nom %} · {{ f.depot_nom }}{% endif %}
+</p>
+
+<div class="panel">
+  <h2>Lignes</h2>
+  <table>
+    <thead><tr><th>Article</th><th>Prix unitaire</th><th>Quantité</th><th>Total</th></tr></thead>
+    <tbody>
+    {% for l in lignes %}
+      <tr>
+        <td>
+          {% if l.article_code %}<a href="{{ url_for('article_detail', code=l.article_code) }}">{{ l.designation or l.article_code }}</a>{% else %}{{ l.designation }}{% endif %}
+        </td>
+        <td class="num">{{ '%.0f'|format(l.prix_unitaire) }}</td>
+        <td class="num">{{ '%.0f'|format(l.quantite) }}</td>
+        <td class="num">{{ '%.0f'|format(l.prix_unitaire * l.quantite) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" style="text-align:right; font-weight:600;">Total</td><td class="num" style="font-weight:600;">{{ '%.0f'|format(total) }}</td></tr>
+    </tfoot>
+  </table>
+</div>
+{% endblock %}

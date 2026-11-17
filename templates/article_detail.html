@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ a.designation }}{% endblock %}
+{% block content %}
+<div class="breadcrumb"><a href="{{ url_for('articles_list') }}">← Articles</a></div>
+<h1>{{ a.designation }}</h1>
+<p class="subtitle code">{{ a.code }}{% if not a.complet %} · <span class="badge warn">fiche à compléter</span>{% endif %}</p>
+
+<div class="grid-2">
+  <div class="panel">
+    <h2>Fiche article</h2>
+    <div class="kv">
+      <div class="row"><span class="k">Famille</span><span class="v">{{ a.famille or '—' }}</span></div>
+      <div class="row"><span class="k">Prix d'achat</span><span class="v num">{{ '%.0f'|format(a.prix_achat) if a.complet else '—' }}</span></div>
+      <div class="row"><span class="k">Prix de vente</span><span class="v num">{{ '%.0f'|format(a.prix_vente) if a.complet else '—' }}</span></div>
+      <div class="row"><span class="k">TVA</span><span class="v">{{ a.tva or '—' }}</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Stock par dépôt</h2>
+    {% if stock %}
+    <table>
+      <thead><tr><th>Dépôt</th><th>Quantité</th></tr></thead>
+      <tbody>
+      {% for s in stock %}
+        <tr><td>{{ s.depot }}</td><td class="num">{{ '%.0f'|format(s.quantite) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Pas de stock enregistré pour cet article.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Historique des ventes (30 dernières)</h2>
+  {% if ventes %}
+  <table>
+    <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Prix unitaire</th><th>Quantité</th></tr></thead>
+    <tbody>
+    {% for v in ventes %}
+      <tr>
+        <td class="num">{{ v.date }}</td>
+        <td class="code">{{ v.numero }}</td>
+        <td>{{ v.client_nom }}</td>
+        <td class="num">{{ '%.0f'|format(v.prix_unitaire) }}</td>
+        <td class="num">{{ '%.0f'|format(v.quantite) }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Aucune vente enregistrée pour cet article.</p>
+  {% endif %}
+</div>
+{% endblock %}

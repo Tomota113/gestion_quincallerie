@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Stock{% endblock %}
+{% block content %}
+<h1>Stock</h1>
+<p class="subtitle">Quantités par dépôt (limité aux 300 premières lignes, affinez la recherche si besoin).</p>
+
+<form class="searchbar" method="get">
+  <input type="text" name="q" placeholder="Rechercher un article…" value="{{ q }}">
+  <select name="depot">
+    <option value="">Tous les dépôts</option>
+    {% for d in depots %}
+      <option value="{{ d.id }}" {{ 'selected' if depot_id == d.id|string }}>{{ d.nom }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Filtrer</button>
+</form>
+
+{% if rows %}
+<table class="card">
+  <thead><tr><th>Code</th><th>Désignation</th><th>Dépôt</th><th>Quantité</th></tr></thead>
+  <tbody>
+  {% for s in rows %}
+    <tr>
+      <td class="code">{{ s.code }}</td>
+      <td><a href="{{ url_for('article_detail', code=s.code) }}">{{ s.designation }}</a></td>
+      <td>{{ s.depot }}</td>
+      <td class="num">{{ '%.0f'|format(s.quantite) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">Aucun résultat.</p>
+{% endif %}
+{% endblock %}

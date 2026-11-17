@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Clients{% endblock %}
+{% block content %}
+<h1>Clients</h1>
+<p class="subtitle">{{ total }} client{{ 's' if total != 1 }}.</p>
+
+<form class="searchbar" method="get">
+  <input type="text" name="q" placeholder="Rechercher par code ou nom…" value="{{ q }}">
+  <button type="submit">Rechercher</button>
+</form>
+
+{% if rows %}
+<table class="card">
+  <thead><tr><th>Code</th><th>Nom</th><th>Factures</th><th></th></tr></thead>
+  <tbody>
+  {% for c in rows %}
+    <tr>
+      <td class="code">{{ c.code }}</td>
+      <td><a href="{{ url_for('client_detail', code=c.code) }}">{{ c.nom }}</a></td>
+      <td class="num">{{ c.n_factures }}</td>
+      <td>{% if not c.complet %}<span class="badge warn">à compléter</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="pagination">
+  <a class="{{ 'disabled' if page <= 1 }}" href="?q={{ q }}&page={{ page - 1 }}">← Précédent</a>
+  <span>Page {{ page }}</span>
+  <a class="{{ 'disabled' if not has_next }}" href="?q={{ q }}&page={{ page + 1 }}">Suivant →</a>
+</div>
+{% else %}
+<p class="empty">Aucun client ne correspond à cette recherche.</p>
+{% endif %}
+{% endblock %}
